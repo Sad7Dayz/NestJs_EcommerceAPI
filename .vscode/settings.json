@@ -1,0 +1,40 @@
+{
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  // 에러 표시 비활성화 설정 추가
+  "problems.decorations.enabled": false,
+  "editor.renderValidationDecorations": "off",
+  // ESLint 에러 표시만 비활성화 (자동완성은 유지)
+  "eslint.quiet": true,
+  "eslint.run": "onSave",
+  // TypeScript 에러 표시 비활성화하지만 IntelliSense는 유지
+  "typescript.reportStyleChecksAsWarnings": false,
+  "typescript.validate.enable": true,
+  "javascript.validate.enable": true,
+  // 자동완성 및 IntelliSense 최적화
+  "typescript.suggest.enabled": true,
+  "typescript.suggest.autoImports": true,
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.completeFunctionCalls": true,
+  "javascript.suggest.enabled": true,
+  "javascript.suggest.autoImports": true,
+  // 에디터 자동완성 설정
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.wordBasedSuggestions": "matchingDocuments",
+  "editor.parameterHints.enabled": true,
+  "editor.hover.enabled": true,
+  // 에러 squiggles만 비활성화 (자동완성 팝업은 유지)
+  "editor.showUnused": false,
+  "editor.showDeprecated": false,
+  // 저장 시 포맷팅은 유지하되 에러 수정은 비활성화
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "never",
+    "source.organizeImports": "explicit"
+  }
+}
