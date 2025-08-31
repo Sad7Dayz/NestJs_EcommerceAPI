@@ -12,6 +12,8 @@ import { SubCategoryModule } from './sub-category/sub-category.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
 import { UserModule } from './user/user.module';
 import { RequestProductModule } from './request-product/request-product.module';
+import { TexModule } from './tex/tex.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { RequestProductModule } from './request-product/request-product.module';
     CouponModule,
     SuppliersModule,
     RequestProductModule,
+    TexModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
