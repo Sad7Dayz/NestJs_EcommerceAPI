@@ -1,0 +1,6 @@
+{
+    "HELLO": "안녕하세요.",
+    "IS_STRING": "{property}는 문자열이어야 합니다",
+    "MinLength": "값이 \"{value}\"인 {property}는 최소 {constraints.0}자 이상이어야 합니다",
+    "MaxLength": "값이 \"{value}\"인 {property}는 최대 {constraints.0}자이어야 합니다"
+}

@@ -72,4 +72,4 @@ export class User {
   })
   gender: string;
 }
-export const UserSchema = SchemaFactory.createForClass(User);
+export const userSchema = SchemaFactory.createForClass(User);

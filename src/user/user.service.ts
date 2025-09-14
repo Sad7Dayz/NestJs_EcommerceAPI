@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
+import { I18nContext } from 'nestjs-i18n';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.schema';
@@ -25,6 +26,7 @@ export class UserService {
    */
   async create(
     createUserDto: CreateUserDto,
+    i18n: I18nContext,
   ): Promise<{ status: number; message: string; data: User }> {
     // Todo: 비밀번호 해시화를 위한 salt 라운드 설정
     const saltOrRounds = 10;
@@ -34,7 +36,12 @@ export class UserService {
       email: createUserDto.email,
     });
     if (ifUserExist) {
-      throw new HttpException('User already exist', 400);
+      throw new HttpException(
+        await i18n.t('service.ALREADY_EXIST', {
+          args: { module_name: i18n.lang === 'en' ? 'User' : '사용자' },
+        }),
+        400,
+      );
     }
 
     // Todo: 비밀번호를 bcrypt를 사용하여 해시화
@@ -60,7 +67,7 @@ export class UserService {
    * 모든 사용자 목록을 조회하는 메서드
    * @returns 비밀번호와 __v 필드를 제외한 사용자 목록
    */
-  async findAll(query) {
+  async findAll(query, i18n: I18nContext) {
     const {
       _limit = 1000_000_000,
       skip = 0,
@@ -71,15 +78,24 @@ export class UserService {
     } = query;
 
     if (Number.isNaN(Number(+_limit))) {
-      throw new HttpException('Invalid limit value', 400);
+      throw new HttpException(
+        await i18n.t('service.INVALID', { args: { invalid_name: 'limit' } }),
+        400,
+      );
     }
 
     if (Number.isNaN(Number(+skip))) {
-      throw new HttpException('Invalid skip value', 400);
+      throw new HttpException(
+        await i18n.t('service.INVALID', { args: { invalid_name: 'skip' } }),
+        400,
+      );
     }
 
     if (!['asc', 'desc'].includes(sort)) {
-      throw new HttpException('Invalid sort value', 400);
+      throw new HttpException(
+        await i18n.t('service.INVALID', { args: { invalid_name: 'sort' } }),
+        400,
+      );
     }
 
     const users = await this.userModel
@@ -95,7 +111,9 @@ export class UserService {
     // Todo: 보안을 위해 password와 MongoDB의 __v 필드를 제외하고 반환
     return {
       status: 200,
-      message: 'Users found successfully',
+      message: await i18n.t('service.FOUND_SUCCESS', {
+        args: { found_name: i18n.lang === 'en' ? 'Users' : '사용자들' },
+      }),
       length: users.length,
       data: users,
     };
@@ -106,13 +124,20 @@ export class UserService {
    * @param id 조회할 사용자의 ID
    * @returns 사용자 정보와 상태 메시지
    */
-  async findOne(id: string): Promise<{ status: number; data: User }> {
+  async findOne(
+    id: string,
+    i18n: I18nContext,
+  ): Promise<{ status: number; data: User }> {
     // Todo: ID로 사용자 조회, 비밀번호와 __v 필드는 제외
     const user = await this.userModel.findById(id).select('-password -__v');
 
     // Todo: 사용자가 존재하지 않으면 404 에러 발생
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(
+        await i18n.t('service.NOT_FOUND', {
+          args: { not_found_name: i18n.lang === 'en' ? 'User' : '사용자들' },
+        }),
+      );
     }
 
     return {
@@ -130,6 +155,7 @@ export class UserService {
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
+    i18n: I18nContext,
   ): Promise<{
     status: number;
     message: string;
@@ -140,7 +166,11 @@ export class UserService {
       .findById(id)
       .select('-password -__v');
     if (!userExist) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(
+        await i18n.t('service.NOT_FOUND', {
+          args: { not_found_name: i18n.lang === 'en' ? 'User' : '사용자들' },
+        }),
+      );
     }
 
     // Todo: 비밀번호 해시화를 위한 salt 라운드 설정
@@ -163,7 +193,9 @@ export class UserService {
     // Todo: 사용자 정보 업데이트 및 새로운 데이터 반환
     return {
       status: 200,
-      message: 'User updated successfully',
+      message: await i18n.t('service.UPDATED_SUCCESS', {
+        args: { updated_name: i18n.lang === 'en' ? 'User' : '사용자들' },
+      }),
       data: await this.userModel.findByIdAndUpdate(id, user, {
         new: true, // 업데이트된 새로운 문서를 반환
       }),
@@ -175,11 +207,18 @@ export class UserService {
    * @param id 삭제할 사용자의 ID
    * @returns 삭제 완료 메시지
    */
-  async remove(id: string): Promise<{ status: number; message: string }> {
+  async remove(
+    id: string,
+    i18n: I18nContext,
+  ): Promise<{ status: number; message: string }> {
     // Todo: 사용자 존재 여부 확인
     const user = await this.userModel.findById(id).select('-password -__v');
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(
+        await i18n.t('service.NOT_FOUND', {
+          args: { not_found_name: i18n.lang === 'en' ? 'User' : '사용자' },
+        }),
+      );
     }
 
     // Todo: 데이터베이스에서 사용자 삭제
@@ -187,40 +226,62 @@ export class UserService {
 
     return {
       status: 200,
-      message: 'User deleted successfully',
+      message: await i18n.t('service.DELETED_SUCCESS', {
+        args: { deleted_name: i18n.lang === 'en' ? 'User' : '사용자' },
+      }),
     };
   }
 
-  async getMe(payload) {
+  async getMe(payload, i18n: I18nContext) {
     if (!payload._id) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(
+        await i18n.t('service.NOT_FOUND', {
+          args: { not_found_name: i18n.lang === 'en' ? 'User' : '사용자' },
+        }),
+      );
     }
     const user = await this.userModel
       .findById(payload._id)
       .select('-password -__v');
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(
+        await i18n.t('service.NOT_FOUND', {
+          args: { not_found_name: i18n.lang === 'en' ? 'User' : '사용자' },
+        }),
+      );
     }
     return {
       status: 200,
-      message: 'User found',
+      message: await i18n.t('service.FOUND_SUCCESS', {
+        args: { found_name: i18n.lang === 'en' ? 'User' : '사용자' },
+      }),
       data: user,
     };
   }
 
-  async updateMe(payload, updateUserDto: UpdateUserDto) {
+  async updateMe(payload, updateUserDto: UpdateUserDto, i18n: I18nContext) {
     if (!payload._id) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(
+        await i18n.t('service.NOT_FOUND', {
+          args: { not_found_name: i18n.lang === 'en' ? 'User' : '사용자' },
+        }),
+      );
     }
     const user = await this.userModel
       .findById(payload._id)
       .select('-password -__v');
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(
+        await i18n.t('service.NOT_FOUND', {
+          args: { not_found_name: i18n.lang === 'en' ? 'User' : '사용자' },
+        }),
+      );
     }
     return {
       status: 200,
-      message: 'User updated successfully',
+      message: await i18n.t('service.UPDATED_SUCCESS', {
+        args: { updated_name: i18n.lang === 'en' ? 'User' : '사용자' },
+      }),
       data: await this.userModel
         .findByIdAndUpdate(payload._id, updateUserDto, {
           new: true,
@@ -229,15 +290,23 @@ export class UserService {
     };
   }
 
-  async deleteMe(payload) {
+  async deleteMe(payload, i18n: I18nContext) {
     if (!payload._id) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(
+        await i18n.t('service.NOT_FOUND', {
+          args: { not_found_name: i18n.lang === 'en' ? 'User' : '사용자' },
+        }),
+      );
     }
     const user = await this.userModel
       .findById(payload._id)
       .select('-password -__v');
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(
+        await i18n.t('service.NOT_FOUND', {
+          args: { not_found_name: i18n.lang === 'en' ? 'User' : '사용자' },
+        }),
+      );
     }
 
     await this.userModel.findByIdAndUpdate(payload._id, { active: false });

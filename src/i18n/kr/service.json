@@ -1,0 +1,10 @@
+{
+    "HELLO": "안녕하세요",
+    "INVALID_LIMIT": "{invalid_name}은(는) 유효하지 않습니다",
+    "ALREADY_EXIST": "{module_name}이(가) 이미 존재합니다",
+    "CREATED_SUCCESS": "{module_name} 생성 성공",
+    "FOUND_SUCCESS": "{found_name} 성공적으로 발견됨",
+    "UPDATED_SUCCESS": "{updated_name}이(가) 성공적으로 업데이트되었습니다",
+    "DELETED_SUCCESS": "{deleted_name}이(가) 성공적으로 삭제되었습니다",
+    "NOT_FOUND": "{not_found_name}이(가) 존재하지 않습니다"
+}

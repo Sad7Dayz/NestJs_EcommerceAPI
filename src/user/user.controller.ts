@@ -12,6 +12,7 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
+import { I18n, I18nContext } from 'nestjs-i18n';
 import { Roles } from './decorator/user.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -28,22 +29,23 @@ export class UserController {
   create(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     createUserDto: CreateUserDto,
+    @I18n() i18n: I18nContext,
   ) {
-    return this.userService.create(createUserDto);
+    return this.userService.create(createUserDto, i18n);
   }
 
   @Get()
   @Roles(['admin'])
   @UseGuards(AuthGuard)
-  findAll(@Query() query) {
-    return this.userService.findAll(query);
+  findAll(@Query() query, @I18n() i18n: I18nContext) {
+    return this.userService.findAll(query, i18n);
   }
 
   @Get(':id')
   @Roles(['admin'])
   @UseGuards(AuthGuard)
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
+  findOne(@Param('id') id: string, @I18n() i18n: I18nContext) {
+    return this.userService.findOne(id, i18n);
   }
 
   @Patch(':id')
@@ -53,15 +55,16 @@ export class UserController {
     @Param('id') id: string,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     updateUserDto: UpdateUserDto,
+    @I18n() i18n: I18nContext,
   ) {
-    return this.userService.update(id, updateUserDto);
+    return this.userService.update(id, updateUserDto, i18n);
   }
 
   @Delete(':id')
   @Roles(['admin'])
   @UseGuards(AuthGuard)
-  remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+  remove(@Param('id') id: string, @I18n() i18n: I18nContext) {
+    return this.userService.remove(id, i18n);
   }
 
   // @Get('me')
@@ -79,8 +82,8 @@ export class UserMeController {
   @Get()
   @Roles(['user', 'admin'])
   @UseGuards(AuthGuard)
-  getMe(@Req() req) {
-    return this.userService.getMe(req.user);
+  getMe(@Req() req, @I18n() i18n: I18nContext) {
+    return this.userService.getMe(req.user, i18n);
   }
 
   @Put()
@@ -91,14 +94,15 @@ export class UserMeController {
     @Req() req,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     updateUserDto: UpdateUserDto,
+    @I18n() i18n: I18nContext,
   ) {
-    return this.userService.updateMe(req.user, updateUserDto);
+    return this.userService.updateMe(req.user, updateUserDto, i18n);
   }
 
   @Delete()
   @Roles(['user'])
   @UseGuards(AuthGuard)
-  deleteMe(@Req() req) {
-    return this.userService.deleteMe(req.user);
+  deleteMe(@Req() req, @I18n() i18n: I18nContext) {
+    return this.userService.deleteMe(req.user, i18n);
   }
 }

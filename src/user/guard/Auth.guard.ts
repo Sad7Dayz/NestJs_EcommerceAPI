@@ -39,7 +39,7 @@ export class AuthGuard implements CanActivate {
       if (
         !payload.role ||
         payload.role === '' ||
-        !roles.includes(payload.role)
+        !roles.includes(payload.role.toLowerCase())
       ) {
         throw new UnauthorizedException();
       }

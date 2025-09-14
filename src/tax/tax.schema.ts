@@ -1,19 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-export type texDocument = HydratedDocument<Tex>;
+export type taxDocument = HydratedDocument<Tax>;
 
 @Schema({ timestamps: true })
-export class Tex {
+export class Tax {
   @Prop({
-    required: true,
+    type: Number,
     default: 0,
   })
-  tex: string;
+  taxPrice: string;
   @Prop({
     type: Number,
     default: 0,
   })
   shippingPrice: string;
 }
-export const texSchema = SchemaFactory.createForClass(Tex);
+
+export const taxSchema = SchemaFactory.createForClass(Tax);
